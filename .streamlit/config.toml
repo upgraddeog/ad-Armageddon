@@ -1,19 +1,11 @@
 [theme]
-primaryColor = "#FF4C60"  # Red/pink GPT highlight
+primaryColor = "#0A66C2"
 backgroundColor = "#FFFFFF"
-secondaryBackgroundColor = "#F5F7FB"
-textColor = "#1E1E1E"
+secondaryBackgroundColor = "#F0F2F6"
+textColor = "#262730"
 font = "sans serif"
 
 [server]
 headless = true
 port = 8501
 enableCORS = false
-enableXsrfProtection = false
-
-[client]
-toolbarMode = "minimal"
-showSidebarNavigation = true
-
-[logger]
-level = "info"

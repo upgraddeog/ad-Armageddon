@@ -1,10 +1,5 @@
 import openai
-import os
 
-# Optional: Set API key here or rely on secrets.toml
-openai.api_key = os.getenv("OPENAI_API_KEY")
-
-# --- Blog / Content Generator ---
 def gpt_content_ideas(keyword, ad_copy, persona, site_niche, competitors=None):
     prompt = (
         f"You are an expert SEO and CRO strategist for a {site_niche} website.\n"
@@ -33,57 +28,29 @@ def gpt_faq_schema(topic):
     )
     return gpt_response(prompt)
 
-# --- Ad Copy & Insight Enhancers ---
-def generate_ad_variants(base_ad):
+def gpt_persona_brief(analytics_data, ad_data):
     prompt = (
-        f"Write 3 A/B test ad variants based on this ad:\n'{base_ad}'\n"
-        f"Each version should test different tones, CTAs, or offers."
-    )
-    return gpt_response(prompt).split("\n\n")
-
-def analyze_ad_creative(ad_text):
-    prompt = (
-        f"You're a performance marketer. Analyze this ad for tone, clarity, persuasiveness, and suggestions to improve CTR:\n\n{ad_text}"
+        "Given this analytics and ad data, define the 1-2 most likely buyer personas, including their top pain points, motivations, and what content would most convert them:\n"
+        f"Analytics Data: {analytics_data}\n"
+        f"Ad Data: {ad_data}\n"
     )
     return gpt_response(prompt)
 
-def summarize_insights(insight_text):
+def gpt_pain_point_article(negative_keywords, low_conv_copy, product):
     prompt = (
-        "You're a digital strategist. Summarize the performance data and key trends from this campaign data:\n\n"
-        f"{insight_text}"
+        f"Write a content brief and intro for an article targeting customers hesitant to buy '{product}'. "
+        f"Address their pain points (from these negative keywords: {', '.join(negative_keywords)}) "
+        f"and improve on this low-performing copy: '{low_conv_copy}'."
     )
     return gpt_response(prompt)
 
-def generate_tags_from_metrics(metrics_text):
+def gpt_trending_content(trending_queries, site_niche):
     prompt = (
-        "Generate 5 performance-based tags or labels based on this ad/campaign metric report:\n\n"
-        f"{metrics_text}"
+        f"Suggest 3 fresh content ideas (with draft headlines and summaries) for a {site_niche} website, targeting these trending search queries:\n"
+        f"{', '.join(trending_queries)}"
     )
     return gpt_response(prompt)
 
-def budget_recommendation(metrics_text):
-    prompt = (
-        "Given this ad performance data, recommend one action for budget scaling (increase, hold, reduce) and why:\n\n"
-        f"{metrics_text}"
-    )
-    return gpt_response(prompt)
-
-# --- Persona & Simulation Tools ---
-def generate_personas(analytics_data, ad_data):
-    prompt = (
-        f"Based on the following analytics and ad results, describe 2 likely audience personas including motivations, objections, and key content types:\n\n"
-        f"Analytics:\n{analytics_data}\n\nAd Data:\n{ad_data}"
-    )
-    return gpt_response(prompt)
-
-def simulate_competitors(niche):
-    prompt = (
-        f"Generate 3 fake but realistic ad examples that a top competitor in the '{niche}' industry might run.\n"
-        "Include headlines and descriptions."
-    )
-    return gpt_response(prompt)
-
-# --- Core Chat Completion Function ---
 def gpt_response(prompt):
     resp = openai.ChatCompletion.create(
         model="gpt-4o",
