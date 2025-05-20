@@ -1,11 +1,11 @@
-import openai
 import streamlit as st
+import openai
 
-openai.api_key = st.secrets["OPENAI_API_KEY"]
+client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 def generate_ad_variants(prompt, n_variants=3):
     try:
-        response = openai.ChatCompletion.create(
+        response = client.chat.completions.create(
             model="gpt-4",
             messages=[
                 {"role": "system", "content": "You are an expert ad copywriter."},
@@ -14,14 +14,13 @@ def generate_ad_variants(prompt, n_variants=3):
             temperature=0.7,
             max_tokens=300
         )
-        variants = [msg["message"]["content"].strip() for msg in response["choices"]]
-        return variants
+        return [choice.message.content.strip() for choice in response.choices]
     except Exception as e:
         return [f"❌ Error generating ad variants: {e}"]
 
 def suggest_keywords(description):
     try:
-        response = openai.ChatCompletion.create(
+        response = client.chat.completions.create(
             model="gpt-4",
             messages=[
                 {"role": "system", "content": "You are a digital marketing expert specialized in keyword targeting."},
@@ -30,6 +29,6 @@ def suggest_keywords(description):
             temperature=0.5,
             max_tokens=200
         )
-        return response["choices"][0]["message"]["content"].strip()
+        return response.choices[0].message.content.strip()
     except Exception as e:
         return f"❌ Error suggesting keywords: {e}"
