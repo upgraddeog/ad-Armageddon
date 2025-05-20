@@ -1,36 +1,42 @@
 import streamlit as st
 from dotenv import load_dotenv
 import os
+from openai_module import generate_ad_variants, suggest_keywords
 
-# Load environment variables
 load_dotenv()
 
-# Set up page configuration
 st.set_page_config(page_title="Advertising Armageddon", layout="wide")
 
-# Sidebar navigation
 st.sidebar.title("🔧 Navigation")
 selection = st.sidebar.radio("Go to", ["Dashboard", "Campaign Manager", "Keyword Manager", "Insights", "Settings"])
 
-# Main title
 st.title("🚀 Advertising Armageddon")
 
-# Content based on selection
 if selection == "Dashboard":
     st.subheader("📊 Overview")
     st.write("Summary of your campaign performance and KPIs.")
 
 elif selection == "Campaign Manager":
     st.subheader("🎯 Campaign Manager")
-    st.write("Upload campaigns, generate A/B variants, manage targeting.")
-    st.button("Generate A/B Variants")
-    st.file_uploader("Upload Campaign CSV", type=["csv"])
+    ad_prompt = st.text_area("Enter base ad description for GPT A/B generation")
+    if st.button("Generate A/B Variants"):
+        if ad_prompt:
+            variants = generate_ad_variants(ad_prompt)
+            for idx, variant in enumerate(variants, 1):
+                st.markdown(f"**Variant {idx}:**
+{variant}")
+        else:
+            st.warning("Please enter a base description to generate variants.")
 
 elif selection == "Keyword Manager":
     st.subheader("🔑 Keyword Manager")
-    st.write("GPT suggestions for keyword targeting and geo options.")
-    st.text_input("Enter product/service description")
-    st.button("Suggest Keywords")
+    product_description = st.text_input("Enter product/service description")
+    if st.button("Suggest Keywords"):
+        if product_description:
+            keywords = suggest_keywords(product_description)
+            st.text_area("Suggested Keywords", value=keywords, height=200)
+        else:
+            st.warning("Please enter a description to get keyword suggestions.")
 
 elif selection == "Insights":
     st.subheader("📈 Insights & Trends")
