@@ -1,137 +1,121 @@
+
 import streamlit as st
-from openai_module import generate_ad_variants, suggest_keywords, summarize_insights, analyze_ad_creative, generate_tags_from_metrics, budget_recommendation
+from openai_module import (
+    generate_ad_variants, suggest_keywords, summarize_insights,
+    analyze_ad_creative, generate_tags_from_metrics, budget_recommendation
+)
 import schedule
-import time
 import threading
+import time
 
 st.set_page_config(page_title="Advertising Armageddon", layout="wide")
 
-st.sidebar.title("🔧 Navigation")
-selection = st.sidebar.radio("Go to", ["Dashboard", "Campaign Manager", "Keyword Manager", "Insights", "Settings"])
+# --- Sidebar Branding ---
+st.sidebar.image("https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/OpenAI_Logo.svg/512px-OpenAI_Logo.svg.png", width=160)
+st.sidebar.title("🧭 Navigation")
+
+selection = st.sidebar.radio("Choose Section", [
+    "Dashboard", "Campaign Manager", "Keyword Manager",
+    "Persona Generator", "Competitor Simulator",
+    "Insights", "WordPress Content Hub",
+    "Schema & SEO Tools", "Email & Slack Settings", "Settings"
+])
 
 st.title("🚀 Advertising Armageddon")
 
 if selection == "Dashboard":
     st.subheader("📊 Overview")
-    st.write("Summary of your campaign performance and KPIs.")
+    st.info("Campaign performance, highlights, and quick insights.")
 
 elif selection == "Campaign Manager":
     st.subheader("🎯 Campaign Manager")
-
-    # Ad variant generation
     st.markdown("**🧪 Generate A/B Variants**")
-    ad_prompt = st.text_area("Enter base ad description for GPT A/B generation")
+    prompt = st.text_area("Base ad copy")
     if st.button("Generate A/B Variants"):
-        if ad_prompt:
-            variants = generate_ad_variants(ad_prompt)
-            for idx, variant in enumerate(variants, 1):
-                st.markdown(f"**Variant {idx}:**\n{variant}")
+        if prompt:
+            variants = generate_ad_variants(prompt)
+            for idx, v in enumerate(variants, 1):
+                st.markdown(f"**Variant {idx}:** {v}")
+            st.toast("✅ Variants created")
         else:
-            st.warning("Please enter a base description to generate variants.")
+            st.warning("Please enter ad copy first.")
 
-    # Ad creative feedback
     st.markdown("---")
-    st.markdown("**🔍 Ad Creative Feedback**")
-    ad_feedback_input = st.text_area("Paste an existing ad for feedback")
-    if st.button("Get Feedback on Ad"):
-        if ad_feedback_input:
-            feedback = analyze_ad_creative(ad_feedback_input)
-            st.text_area("GPT Feedback", value=feedback, height=200)
-        else:
-            st.warning("Please enter ad copy to get feedback.")
+    st.markdown("**🔍 Ad Feedback**")
+    ad = st.text_area("Paste ad text")
+    if st.button("Get Feedback"):
+        if ad:
+            st.text_area("GPT Feedback", analyze_ad_creative(ad), height=200)
+            st.toast("💬 Feedback generated")
 
 elif selection == "Keyword Manager":
-    st.subheader("🔑 Keyword Manager")
-    product_description = st.text_input("Enter product/service description")
+    st.subheader("🔑 Keyword Generator")
+    desc = st.text_input("Describe your offer")
     if st.button("Suggest Keywords"):
-        if product_description:
-            keywords = suggest_keywords(product_description)
-            st.text_area("Suggested Keywords", value=keywords, height=200)
-        else:
-            st.warning("Please enter a description to get keyword suggestions.")
+        if desc:
+            st.text_area("Keywords", suggest_keywords(desc), height=200)
+            st.toast("🔎 Keywords generated")
+
+elif selection == "Persona Generator":
+    st.subheader("🧍 Persona Builder")
+    analytics = st.text_area("Analytics Data")
+    ads = st.text_area("Ad Performance Snippet")
+    if st.button("Generate Personas"):
+        if analytics and ads:
+            from openai_helpers import generate_personas
+            result = generate_personas(analytics, ads)
+            st.text_area("Personas", result, height=250)
+            st.toast("🙋 Personas generated")
+
+elif selection == "Competitor Simulator":
+    st.subheader("🆚 Competitor Ad Simulator")
+    niche = st.text_input("Your Niche")
+    if st.button("Simulate Competitors"):
+        if niche:
+            from openai_helpers import simulate_competitors
+            result = simulate_competitors(niche)
+            st.text_area("Simulated Ads", result, height=250)
+            st.toast("📢 Simulated competitor ads")
 
 elif selection == "Insights":
-    st.subheader("📈 Insights & Trends")
-
-    # KPI Trend Visualization (placeholder)
-    st.line_chart(data={"Example": [1, 2, 3, 4, 3, 5]})
-
-    # Insight summarizer
-    st.markdown("---")
-    st.markdown("**🧠 GPT Insight Summary**")
-    insight_input = st.text_area("Paste campaign KPIs or metrics")
+    st.subheader("📈 KPI Insight Generator")
+    kpis = st.text_area("Paste Metrics")
     if st.button("Summarize Insights"):
-        if insight_input:
-            summary = summarize_insights(insight_input)
-            st.text_area("GPT Summary", value=summary, height=200)
-        else:
-            st.warning("Please paste metrics for insight summary.")
+        if kpis:
+            st.text_area("Summary", summarize_insights(kpis), height=200)
+            st.toast("🧠 Insights summarized")
 
-    # Insight tags
-    st.markdown("**🏷️ Auto-Generated Tags**")
     if st.button("Generate Tags"):
-        if insight_input:
-            tags = generate_tags_from_metrics(insight_input)
-            st.text_area("Tags", value=tags, height=100)
-        else:
-            st.warning("Paste metrics above to generate tags.")
+        if kpis:
+            st.text_area("Tags", generate_tags_from_metrics(kpis))
+            st.toast("🏷️ Tags ready")
 
-    # Budget recommendation
-    st.markdown("**💸 Budget Recommendation**")
-    if st.button("Recommend Budget Action"):
-        if insight_input:
-            recommendation = budget_recommendation(insight_input)
-            st.text_area("Budget Suggestion", value=recommendation, height=100)
-        else:
-            st.warning("Paste metrics above to analyze budget.")
+    if st.button("Recommend Budget"):
+        if kpis:
+            st.text_area("Recommendation", budget_recommendation(kpis))
+            st.toast("💸 Budget action ready")
+
+elif selection == "WordPress Content Hub":
+    st.subheader("📝 GPT WordPress Publisher")
+    st.info("Use `dashboard.py` for the full experience.")
+
+elif selection == "Schema & SEO Tools":
+    st.subheader("🔖 FAQ & Schema Generator")
+    topic = st.text_input("Topic")
+    if st.button("Generate Schema"):
+        from openai_helpers import gpt_faq_schema
+        result = gpt_faq_schema(topic)
+        st.code(result)
+        st.toast("📚 FAQ + Schema generated")
+
+elif selection == "Email & Slack Settings":
+    st.subheader("📬 Slack & Email Digest Settings")
+    st.markdown("Controls for digest sending, channels, schedule, and Slack alerts.")
+    st.info("Configured via Streamlit secrets.toml")
 
 elif selection == "Settings":
-    st.subheader("⚙️ Integrations")
-
-    # Email SMTP configuration
-    st.markdown("### 📧 Email Summary Settings")
-    email_user = st.text_input("Sender Email Address (SMTP)")
-    email_pass = st.text_input("Email App Password (SMTP)", type="password")
-    email_to = st.text_input("Recipient Email Address")
-    email_subject = st.text_input("Email Subject", value="Your GPT Ad Performance Summary")
-    send_now = st.button("Send Email Summary Now")
-
-    if send_now:
-        if all([email_user, email_pass, email_to, 'insight_input' in locals()]):
-            from email_digest import send_gpt_email_summary
-            result = send_gpt_email_summary(insight_input, email_user, email_pass, email_to, email_subject)
-            st.success(result)
-        else:
-            st.warning("Please complete email fields and paste metrics in the Insights section.")
-
-    # Scheduler configuration
-    st.markdown("### 🕒 Email Schedule")
-    enable_scheduler = st.checkbox("Enable Daily Email Summary (simulated with loop)")
-
-    if "email_scheduled" not in st.session_state:
-        st.session_state.email_scheduled = False
-
-    def scheduled_task():
-        from email_digest import send_gpt_email_summary
-        if all([email_user, email_pass, email_to, 'insight_input' in locals()]):
-            result = send_gpt_email_summary(insight_input, email_user, email_pass, email_to, email_subject)
-            print("Email sent via schedule:", result)
-
-    if enable_scheduler and not st.session_state.email_scheduled:
-        schedule.clear()
-        schedule.every().day.at("09:00").do(scheduled_task)
-
-        def run_scheduler():
-            while True:
-                schedule.run_pending()
-                time.sleep(60)
-
-        threading.Thread(target=run_scheduler, daemon=True).start()
-        st.session_state.email_scheduled = True
-        st.success("✅ Daily email scheduling enabled (simulated loop active)")
-    elif not enable_scheduler:
-        schedule.clear()
-        st.session_state.email_scheduled = False
+    st.subheader("⚙️ Global App Settings")
+    st.markdown("API Keys, tokens, and credentials loaded from `secrets.toml`")
 
 st.markdown("---")
-st.caption("Advertising Armageddon © 2025")
+st.caption("Part of the Advertising Armageddon suite © 2025")
