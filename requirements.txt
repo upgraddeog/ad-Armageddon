@@ -1,3 +1,14 @@
-openai
-requests
 streamlit
+openai
+google-api-python-client
+google-auth
+google-auth-oauthlib
+google-ads
+slack_sdk
+pandas
+matplotlib
+plotly
+python-dotenv
+requests
+
+schedule
