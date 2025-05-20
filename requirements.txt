@@ -1,3 +1,12 @@
+streamlit
 openai
 requests
-streamlit
+smtplib  # (via standard library; listed for clarity)
+schedule
+pandas
+google-api-python-client
+google-auth
+google-auth-oauthlib
+oauth2client
+plotly
+python-dotenv
