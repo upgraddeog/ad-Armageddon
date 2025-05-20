@@ -1,9 +1,7 @@
 import openai
-import os
-from dotenv import load_dotenv
+import streamlit as st
 
-load_dotenv()
-openai.api_key = os.getenv("OPENAI_API_KEY")
+openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 def generate_ad_variants(prompt, n_variants=3):
     try:

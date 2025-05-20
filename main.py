@@ -1,9 +1,7 @@
 import streamlit as st
-from dotenv import load_dotenv
-import os
+import streamlit as st
 from openai_module import generate_ad_variants, suggest_keywords
 
-load_dotenv()
 
 st.set_page_config(page_title="Advertising Armageddon", layout="wide")
 
@@ -23,8 +21,7 @@ elif selection == "Campaign Manager":
         if ad_prompt:
             variants = generate_ad_variants(ad_prompt)
             for idx, variant in enumerate(variants, 1):
-                st.markdown(f"**Variant {idx}:**
-{variant}")
+                st.markdown(f"**Variant {idx}:**\n{variant}")
         else:
             st.warning("Please enter a base description to generate variants.")
 
